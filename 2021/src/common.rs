@@ -10,5 +10,5 @@ pub fn read_file(day: usize) -> String {
 }
 #[inline]
 pub fn parse_nums(l: &str) -> Vec<usize> {
-    l.split(',').filter_map(|n| n.parse().ok()).collect()
+    l.lines().filter_map(|n| n.parse().ok()).collect()
 }
