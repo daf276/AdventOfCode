@@ -2,7 +2,7 @@
 #![feature(test)]
 extern crate test;
 use aoc2021::common::*;
-use std::ops::Add;
+use std::iter::Sum;
 
 #[derive(Debug, Copy, Clone)]
 struct Vector3D(isize, isize, isize);
@@ -14,15 +14,16 @@ impl Vector3D{
     }
 }
 
-impl Add for Vector3D {
-    type Output = Vector3D;
-
-    fn add(self, other: Vector3D) -> Vector3D {
-        Vector3D {
-            0: self.0+other.0,
-            1: self.1+other.1,
-            2: self.2+other.2
-        }
+impl<'a> Sum<&'a Self> for Vector3D {
+    fn sum<I>(iter: I) -> Self
+        where
+            I: Iterator<Item = &'a Self>,
+    {
+        iter.fold(Self { 0: 0, 1: 0, 2: 0 }, |a, b| Self {
+            0: a.0 + b.0,
+            1: a.1 + b.1,
+            2: a.2 + b.2,
+        })
     }
 }
 
@@ -56,7 +57,7 @@ fn parse_input(raw: &str) -> Parsed {
 }
 
 fn part1(parsed: &Parsed) -> isize {
-    let sum = parsed.iter().fold(Vector3D::new(0,0,0), |sum, val| sum + *val);
+    let sum: Vector3D = parsed.iter().sum();
     sum.0 * sum.2
 }
 
