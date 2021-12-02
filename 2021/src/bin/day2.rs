@@ -28,10 +28,9 @@ impl Add for Vector3D {
 
 impl From<&str> for Vector3D {
     fn from(item: &str) -> Self {
-        let mut split = item.split_whitespace();
-        let direction = split.next().unwrap();
-        let n = split.next().unwrap().parse().unwrap();
-        match direction {
+        let (dir, number) = item.split_once(' ').unwrap();
+        let n = number.parse::<isize>().unwrap();
+        match dir {
             "forward" => Vector3D::new(n,0,0),
             "down" => Vector3D::new(0,0,n),
             "up" => Vector3D::new(0,0,-n),
