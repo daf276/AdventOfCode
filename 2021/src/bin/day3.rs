@@ -2,19 +2,26 @@
 #![feature(test)]
 extern crate test;
 use aoc2021::common::*;
-use bitvec::prelude::*;
 
-type Parsed = Vec<BitVec>;
+type Parsed = Vec<Vec<bool>>;
 
 fn read_input() -> String {
     read_file(3)
 }
 
-fn parse_input(raw: &str) -> Parsed {
-    raw.lines().map(|line| BitVec::from_bitslice(&BitVec::from_element(usize::from_str_radix(line, 2).unwrap())[0..line.len()])).collect()
+fn char_to_bool(c: char) -> bool {
+    match c{
+        '0' => false,
+        '1' => true,
+        _ => unreachable!(),
+    }
 }
 
-fn transpose(v:&Vec<BitVec>) -> Vec<BitVec> {
+fn parse_input(raw: &str) -> Parsed {
+    raw.lines().map(|line| line.chars().map(|c| char_to_bool(c)).collect()).collect()
+}
+
+fn transpose(v:Vec<Vec<bool>>) -> Vec<Vec<bool>> {
     let len = v[0].len();
     let mut iters: Vec<_> = v.into_iter().map(|n| n.into_iter()).collect();
     (0..len)
@@ -22,43 +29,37 @@ fn transpose(v:&Vec<BitVec>) -> Vec<BitVec> {
             iters
                 .iter_mut()
                 .map(|n| n.next().unwrap())
-                .collect::<BitVec>()
+                .collect::<Vec<bool>>()
         })
         .collect()
 }
 
-fn to_u32(slice: Vec<bool>) -> u32 {
-    slice.iter().rev().fold(0, |acc, &b| acc*2 + b as u32)
-}
-
-fn to_u32_2(slice: BitVec) -> u32 {
-    slice.iter().rev().fold(0, |acc, b| acc*2 + *b as u32)
+fn to_u32(slice: &Vec<bool>) -> u32 {
+    slice.iter().fold(0, |acc, &b| acc*2 + b as u32)
 }
 
 fn part1(parsed: &Parsed) -> u32 {
-    let transposed = transpose(parsed);
-    let gamma:Vec<bool> = transposed.iter().map(|e| e.count_ones() >= transposed[0].len()/2).collect();
+    let transposed = transpose(parsed.clone());
+    let gamma:Vec<bool> = transposed.iter().map(|e| e.iter().filter(|&b| *b).count() >= transposed[0].len()/2).collect();
     let epsilon = gamma.iter().map(|b| !b).collect();
-    to_u32(gamma) * to_u32(epsilon)
+    to_u32(&gamma) * to_u32(&epsilon)
 }
 
 fn part2(parsed: &Parsed) -> u32 {
     let mut matching_gamma = parsed.clone();
     let mut matching_epsilon = parsed.clone();
 
-    for i in (0..parsed[0].len()).rev() {
+    for i in 0..parsed[0].len() {
         if matching_gamma.len() > 1 {
-            let transposed = transpose(&matching_gamma);
-            let test = transposed[i].count_ones() *2 >= transposed[i].len();
-            matching_gamma.retain(|n| n[i] == test);
+            let more_ones = matching_gamma.iter().filter(|l| l[i]).count()*2 >= matching_gamma.len();
+            matching_gamma.retain(|n| n[i] == more_ones);
         }
         if matching_epsilon.len() > 1 {
-            let transposed2 = transpose(&matching_epsilon);
-            let test2 = transposed2[i].count_zeros() *2 > transposed2[i].len();
-            matching_epsilon.retain(|n| n[i] == test2);
+            let more_zeros = matching_epsilon.iter().filter(|l| !l[i]).count()*2 > matching_epsilon.len();
+            matching_epsilon.retain(|n| n[i] == more_zeros);
         }
     }
-    to_u32_2(matching_gamma[0].clone()) * to_u32_2(matching_epsilon[0].clone())
+    to_u32(&matching_gamma[0]) * to_u32(&matching_epsilon[0])
 }
 
 fn main() {
