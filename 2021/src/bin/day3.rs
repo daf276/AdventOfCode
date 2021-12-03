@@ -11,7 +11,7 @@ fn read_input() -> String {
 }
 
 fn parse_input(raw: &str) -> Parsed {
-    raw.lines().map(|line| BitVec::from_element(usize::from_str_radix(line, 2).unwrap())).collect()
+    raw.lines().map(|line| BitVec::from_bitslice(&BitVec::from_element(usize::from_str_radix(line, 2).unwrap())[0..line.len()])).collect()
 }
 
 fn transpose(v:&Vec<BitVec>) -> Vec<BitVec> {
@@ -31,20 +31,39 @@ fn to_u32(slice: Vec<bool>) -> u32 {
     slice.iter().rev().fold(0, |acc, &b| acc*2 + b as u32)
 }
 
-fn part1(parsed: &Parsed, length: usize) -> u32 {
-    let transposed = transpose(parsed)[0..length].to_vec();
+fn to_u32_2(slice: BitVec) -> u32 {
+    slice.iter().rev().fold(0, |acc, b| acc*2 + *b as u32)
+}
+
+fn part1(parsed: &Parsed) -> u32 {
+    let transposed = transpose(parsed);
     let gamma:Vec<bool> = transposed.iter().map(|e| e.count_ones() >= transposed[0].len()/2).collect();
     let epsilon = gamma.iter().map(|b| !b).collect();
     to_u32(gamma) * to_u32(epsilon)
 }
 
-fn part2(parsed: &Parsed) -> usize {
-    1
+fn part2(parsed: &Parsed) -> u32 {
+    let mut matching_gamma = parsed.clone();
+    let mut matching_epsilon = parsed.clone();
+
+    for i in (0..parsed[0].len()).rev() {
+        if matching_gamma.len() > 1 {
+            let transposed = transpose(&matching_gamma);
+            let test = transposed[i].count_ones() *2 >= transposed[i].len();
+            matching_gamma.retain(|n| n[i] == test);
+        }
+        if matching_epsilon.len() > 1 {
+            let transposed2 = transpose(&matching_epsilon);
+            let test2 = transposed2[i].count_zeros() *2 > transposed2[i].len();
+            matching_epsilon.retain(|n| n[i] == test2);
+        }
+    }
+    to_u32_2(matching_gamma[0].clone()) * to_u32_2(matching_epsilon[0].clone())
 }
 
 fn main() {
     let input = parse_input(&read_input());
-    println!("Part 1: {}", part1(&input, 12));
+    println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
 
@@ -68,9 +87,9 @@ mod tests {
 00010
 01010";
 
-    test!(part1(5) == 198);
-    test!(part2() == 5);
-    bench!(part1(12) == 3374136);
-    bench!(part2() == 1728);
+    test!(part1() == 198);
+    test!(part2() == 230);
+    bench!(part1() == 3374136);
+    bench!(part2() == 4432698);
     bench_input!(len == 1000);
 }
