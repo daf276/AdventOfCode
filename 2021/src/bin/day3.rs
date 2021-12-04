@@ -9,16 +9,8 @@ fn read_input() -> String {
     read_file(3)
 }
 
-fn char_to_bool(c: char) -> bool {
-    match c{
-        '0' => false,
-        '1' => true,
-        _ => unreachable!(),
-    }
-}
-
 fn parse_input(raw: &str) -> Parsed {
-    raw.lines().map(|line| line.chars().map(|c| char_to_bool(c)).collect()).collect()
+    raw.lines().map(|line| line.bytes().map(|c| c == b'1').collect()).collect()
 }
 
 fn transpose(v:Vec<Vec<bool>>) -> Vec<Vec<bool>> {
@@ -40,7 +32,7 @@ fn to_u32(slice: &Vec<bool>) -> u32 {
 
 fn part1(parsed: &Parsed) -> u32 {
     let transposed = transpose(parsed.clone());
-    let gamma:Vec<bool> = transposed.iter().map(|e| e.iter().filter(|&b| *b).count() >= transposed[0].len()/2).collect();
+    let gamma:Vec<bool> = transposed.iter().map(|e| e.iter().filter(|&b| *b).count() >= parsed.len()/2).collect();
     let epsilon = gamma.iter().map(|b| !b).collect();
     to_u32(&gamma) * to_u32(&epsilon)
 }
