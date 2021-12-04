@@ -59,12 +59,11 @@ fn parse_input(raw: &str) -> Parsed {
     let (number_line, boards) = raw.split_once("\n\n").unwrap();
     let called_numbers = number_line.split(",").filter_map(|c| c.parse().ok()).collect();
 
-    let boards: Vec<&str> = boards.split("\n\n").collect();
-    let test: Vec<Vec<u8>> = boards
-        .iter()
-        .map(|b| b.split_ascii_whitespace().filter_map(|n| n.parse().ok()).collect())
+    let boards: Vec<Vec<u8>> = boards
+        .split("\n\n")
+        .map(|b| b.split_ascii_whitespace().map(|n| n.parse().unwrap()).collect())
         .collect();
-    let maps: Vec<Board> = test
+    let boards: Vec<Board> = boards
         .iter()
         .map(|b| Board {
             map:   b.iter().enumerate().map(|(i, &e)| (e, i as u32)).collect(),
@@ -72,10 +71,7 @@ fn parse_input(raw: &str) -> Parsed {
         })
         .collect();
 
-    BingoGame {
-        called_numbers,
-        boards: maps,
-    }
+    BingoGame { called_numbers, boards }
 }
 
 fn part1(parsed: &Parsed) -> u32 {
