@@ -14,26 +14,24 @@ fn parse_input(raw: &str) -> Parsed {
     raw.lines().map(|line| line.bytes().map(|c| c == b'1').collect()).collect()
 }
 
-fn transpose(v:Vec<Vec<bool>>) -> Vec<Vec<bool>> {
+fn transpose(v: Vec<Vec<bool>>) -> Vec<Vec<bool>> {
     let len = v[0].len();
     let mut iters: Vec<_> = v.into_iter().map(|n| n.into_iter()).collect();
     (0..len)
-        .map(|_| {
-            iters
-                .iter_mut()
-                .map(|n| n.next().unwrap())
-                .collect::<Vec<bool>>()
-        })
+        .map(|_| iters.iter_mut().map(|n| n.next().unwrap()).collect::<Vec<bool>>())
         .collect()
 }
 
 fn to_u32(slice: &Vec<bool>) -> u32 {
-    slice.iter().fold(0, |acc, &b| acc*2 + b as u32)
+    slice.iter().fold(0, |acc, &b| acc * 2 + b as u32)
 }
 
 fn part1(parsed: &Parsed) -> u32 {
     let transposed = transpose(parsed.clone());
-    let gamma:Vec<bool> = transposed.iter().map(|e| e.iter().filter(|&b| *b).count() >= parsed.len()/2).collect();
+    let gamma: Vec<bool> = transposed
+        .iter()
+        .map(|e| e.iter().filter(|&b| *b).count() >= parsed.len() / 2)
+        .collect();
     let epsilon = gamma.iter().map(|b| !b).collect();
     to_u32(&gamma) * to_u32(&epsilon)
 }
@@ -44,11 +42,11 @@ fn part2(parsed: &Parsed) -> u32 {
 
     for i in 0..parsed[0].len() {
         if matching_gamma.len() > 1 {
-            let more_ones = matching_gamma.iter().filter(|l| l[i]).count()*2 >= matching_gamma.len();
+            let more_ones = matching_gamma.iter().filter(|l| l[i]).count() * 2 >= matching_gamma.len();
             matching_gamma.retain(|n| n[i] == more_ones);
         }
         if matching_epsilon.len() > 1 {
-            let more_zeros = matching_epsilon.iter().filter(|l| !l[i]).count()*2 > matching_epsilon.len();
+            let more_zeros = matching_epsilon.iter().filter(|l| !l[i]).count() * 2 > matching_epsilon.len();
             matching_epsilon.retain(|n| n[i] == more_zeros);
         }
     }

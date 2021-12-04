@@ -10,7 +10,6 @@ fn read_input() -> String {
     read_file(1)
 }
 
-
 fn parse_input(raw: &str) -> Parsed {
     parse_nums(raw)
 }

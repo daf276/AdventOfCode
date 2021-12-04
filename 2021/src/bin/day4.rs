@@ -8,14 +8,14 @@ const DAY: usize = 4;
 
 #[derive(Debug, Clone)]
 struct Board {
-    map: HashMap<u8, u32>,
+    map:   HashMap<u8, u32>,
     state: u32,
 }
 
 #[derive(Debug, Clone)]
 struct BingoGame {
     called_numbers: Vec<u8>,
-    boards:        Vec<Board>,
+    boards:         Vec<Board>,
 }
 
 impl BingoGame {
@@ -33,18 +33,18 @@ impl BingoGame {
     }
 }
 
-impl Board{
-    fn has_won(&self) -> bool{
-        let line = |i: u32| -> bool {(i..i+5).all(|n| ( self.state&(1<<n)) != 0)};
-        let row = |i: u32| -> bool {(i..).step_by(5).take(5).all(|n| ( self.state&(1<<n)) != 0)};
+impl Board {
+    fn has_won(&self) -> bool {
+        let line = |i: u32| -> bool { (i..i + 5).all(|n| (self.state & (1 << n)) != 0) };
+        let row = |i: u32| -> bool { (i..).step_by(5).take(5).all(|n| (self.state & (1 << n)) != 0) };
 
         line(0) || line(5) || line(10) || line(15) || line(20) || row(0) || row(1) || row(2) || row(3) || row(4)
     }
 
-    fn mark_number(&mut self, number: u8){
+    fn mark_number(&mut self, number: u8) {
         let n = self.map.get(&number);
         if let Some(x) = n {
-            self.state = self.state|(1<<x)
+            self.state = self.state | (1 << x)
         }
     }
 }
@@ -55,16 +55,27 @@ fn read_input() -> String {
     read_file(4)
 }
 
-
 fn parse_input(raw: &str) -> Parsed {
     let (number_line, boards) = raw.split_once("\n\n").unwrap();
     let called_numbers = number_line.split(",").filter_map(|c| c.parse().ok()).collect();
 
-    let boards:Vec<&str> = boards.split("\n\n").collect();
-    let test:Vec<Vec<u8>> = boards.iter().map(|b| b.split_ascii_whitespace().filter_map(|n| n.parse().ok()).collect()).collect();
-    let maps:Vec<Board>  = test.iter().map(|b| Board{ map: b.iter().enumerate().map(|(i,&e)| (e,i as u32)).collect(), state:0}).collect();
+    let boards: Vec<&str> = boards.split("\n\n").collect();
+    let test: Vec<Vec<u8>> = boards
+        .iter()
+        .map(|b| b.split_ascii_whitespace().filter_map(|n| n.parse().ok()).collect())
+        .collect();
+    let maps: Vec<Board> = test
+        .iter()
+        .map(|b| Board {
+            map:   b.iter().enumerate().map(|(i, &e)| (e, i as u32)).collect(),
+            state: 0,
+        })
+        .collect();
 
-    BingoGame{ called_numbers, boards:maps }
+    BingoGame {
+        called_numbers,
+        boards: maps,
+    }
 }
 
 fn part1(parsed: &Parsed) -> u32 {
@@ -72,7 +83,12 @@ fn part1(parsed: &Parsed) -> u32 {
     for n in game.called_numbers.clone() {
         game.mark_numbers(n);
         if let Some(board) = game.has_won() {
-            return board.map.iter().map(|(&e,i)| if board.state&(1<<i) == 0 {e as u32} else {0}).sum::<u32>() * n as u32;
+            return board
+                .map
+                .iter()
+                .map(|(&e, i)| if board.state & (1 << i) == 0 { e as u32 } else { 0 })
+                .sum::<u32>()
+                * n as u32;
         }
     }
     unreachable!("I think someone has to win?")
@@ -83,7 +99,12 @@ fn part2(parsed: &Parsed) -> u32 {
     for n in game.called_numbers.clone() {
         game.mark_numbers(n);
         if game.boards.len() == 1 && game.boards[0].has_won() {
-            return &game.boards[0].map.iter().map(|(&e,i)| if &game.boards[0].state&(1<<i) == 0 {e as u32} else {0}).sum::<u32>() * n as u32;
+            return &game.boards[0]
+                .map
+                .iter()
+                .map(|(&e, i)| if &game.boards[0].state & (1 << i) == 0 { e as u32 } else { 0 })
+                .sum::<u32>()
+                * n as u32;
         }
         game.boards.retain(|b| !b.has_won());
     }
