@@ -4,6 +4,8 @@ extern crate test;
 use aoc2021::common::*;
 use std::iter::Sum;
 
+const DAY: usize = 2;
+
 #[derive(Debug, Copy, Clone)]
 struct Vector3D(isize, isize, isize);
 type Parsed = Vec<Vector3D>;
@@ -76,8 +78,6 @@ fn main() {
 mod tests {
     use super::*;
     use aoc2021::*;
-    use paste::paste;
-    use test::black_box;
 
     const TEST_INPUT: &str = "forward 5
 down 5
@@ -90,5 +90,5 @@ forward 2";
     test!(part2() == 900);
     bench!(part1() == 1648020);
     bench!(part2() == 1759818555);
-    bench_input!(len == 1000);
+    bench_input!(Vec::len => 1000);
 }

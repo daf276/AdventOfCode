@@ -3,6 +3,7 @@
 extern crate test;
 use aoc2021::common::*;
 
+const DAY: usize = 3;
 type Parsed = Vec<Vec<bool>>;
 
 fn read_input() -> String {
@@ -64,8 +65,6 @@ fn main() {
 mod tests {
     use super::*;
     use aoc2021::*;
-    use paste::paste;
-    use test::black_box;
 
     const TEST_INPUT: &str = "00100
 11110
@@ -84,5 +83,5 @@ mod tests {
     test!(part2() == 230);
     bench!(part1() == 3374136);
     bench!(part2() == 4432698);
-    bench_input!(len == 1000);
+    bench_input!(Vec::len => 1000);
 }

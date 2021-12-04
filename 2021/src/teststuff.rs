@@ -1,30 +1,30 @@
 #[macro_export]
 macro_rules! bench {
     ($part: ident ($($param: expr),*) == $expected:expr) => {
-        paste! {
+        paste::paste! {
             #[bench]
             fn [<$part _bench>](b: &mut test::Bencher) {
-                    let raw = &read_input();
+                let raw = &read_file(DAY);
                 let input = parse_input(&raw);
-                b.iter(|| assert_eq!($part(black_box(&input)$(, $param)*), $expected));
+                b.iter(|| assert_eq!($part(test::black_box(&input)$(, $param)*), $expected));
             }
         }
     };
 }
 #[macro_export]
 macro_rules! bench_input {
-    ($fn:ident == $expected_len:expr) => {
+    ($fn:expr => $expected:expr) => {
         #[bench]
         fn bench_input_parsing(b: &mut test::Bencher) {
-            let raw = read_input();
-            b.iter(|| assert_eq!(parse_input(black_box(&raw)).$fn(), $expected_len));
+            let raw = &read_file(DAY);
+            b.iter(|| assert_eq!($fn(&parse_input(test::black_box(&raw))), $expected));
         }
     };
 }
 #[macro_export]
 macro_rules! test {
     ($part: ident ($($param: expr),*) == $expected:expr) => {
-        paste! {
+        paste::paste! {
             #[test]
             fn [<$part _test>]() {
                 let input = parse_input(TEST_INPUT);
