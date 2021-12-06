@@ -1,6 +1,7 @@
 #![feature(test)]
 extern crate test;
 use aoc2021::common::*;
+use std::collections::VecDeque;
 
 const DAY: usize = 6;
 type Parsed = Vec<usize>;
@@ -14,29 +15,23 @@ fn parse_input(raw: &str) -> Parsed {
 }
 
 fn part1(parsed: &Parsed) -> usize {
-    let mut fish = vec![0;9];
+    let mut fish = VecDeque::from(vec![0;9]);
     parsed.iter().for_each(|&e| fish[e]+=1);
 
-    let mut a = 6;
-    let mut b  = 8;
     for _ in 0..80 {
-        a = (a+1)%9;
-        b = (b+1)%9;
-        fish[a] += fish[b];
+        fish.rotate_left(1);
+        fish[6] += fish[8];
     }
     return fish.into_iter().sum()
 }
 
 fn part2(parsed: &Parsed) -> usize {
-    let mut fish = vec![0;9];
+    let mut fish = VecDeque::from(vec![0;9]);
     parsed.iter().for_each(|&e| fish[e]+=1);
 
-    let mut a= 6;
-    let mut b  = 8;
     for _ in 0..256 {
-        a = (a+1)%9;
-        b = (b+1)%9;
-        fish[a] += fish[b];
+        fish.rotate_left(1);
+        fish[6] += fish[8];
     }
     return fish.into_iter().sum()
 }
