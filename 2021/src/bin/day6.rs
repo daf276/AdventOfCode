@@ -16,9 +16,13 @@ fn parse_input(raw: &str) -> Parsed {
 fn part1(parsed: &Parsed) -> usize {
     let mut fish = vec![0;9];
     parsed.iter().for_each(|&e| fish[e]+=1);
-    for _ in 0..80{
-        fish.rotate_left(1);
-        fish[6] += fish[8];
+
+    let mut a = 6;
+    let mut b  = 8;
+    for _ in 0..80 {
+        a = (a+1)%9;
+        b = (b+1)%9;
+        fish[a] += fish[b];
     }
     return fish.into_iter().sum()
 }
@@ -26,9 +30,13 @@ fn part1(parsed: &Parsed) -> usize {
 fn part2(parsed: &Parsed) -> usize {
     let mut fish = vec![0;9];
     parsed.iter().for_each(|&e| fish[e]+=1);
-    for _ in 0..256{
-        fish.rotate_left(1);
-        fish[6] += fish[8];
+
+    let mut a= 6;
+    let mut b  = 8;
+    for _ in 0..256 {
+        a = (a+1)%9;
+        b = (b+1)%9;
+        fish[a] += fish[b];
     }
     return fish.into_iter().sum()
 }
