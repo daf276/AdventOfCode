@@ -12,3 +12,10 @@ Cargo.lock
 .idea/
 Cargo.lock
 target/
+# Ignore Gradle project-specific cache directory
+.gradle
+lib/
+gradle/wrapper
+
+# Ignore Gradle build output directory
+build
