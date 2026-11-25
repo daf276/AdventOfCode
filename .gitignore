@@ -19,3 +19,6 @@ gradle/wrapper
 
 # Ignore Gradle build output directory
 build
+
+# Puzzle inputs are per-user and not meant to be published
+2026/inputs/
